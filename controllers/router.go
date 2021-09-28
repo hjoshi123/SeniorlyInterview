@@ -15,6 +15,7 @@ func NewHTTPHandler(service model.OrderService) http.Handler {
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("pizzaType", controller.VerifyPizzaType)
+		v.RegisterValidation("updateStatus", controller.VerifyUpdateStatus)
 	}
 
 	api := router.Group("/api")
