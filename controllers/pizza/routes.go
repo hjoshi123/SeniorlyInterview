@@ -21,13 +21,20 @@ func NewRoutesFactory(group *gin.RouterGroup) func(service pizza.OrderService) {
 
 			log.Println(order.Mobile)
 			newOrder, err := service.CreateOrder(order)
-			if err != nil {
+			if err != nil && err.Error() == "user exists with an order in previous" {
 				c.Error(err)
+				c.JSON(http.StatusOK, gin.H{
+					"message": "Only one order can be active",
+					"order":   newOrder,
+				})
 				return
 			}
 
 			log.Println(newOrder)
-			c.JSON(http.StatusCreated, newOrder)
+			c.JSON(http.StatusCreated, gin.H{
+				"message": "Order created",
+				"order":   newOrder,
+			})
 		})
 
 		group.GET("/track_pizza", func(c *gin.Context) {

@@ -2,16 +2,20 @@ package pizza
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
+
+	"github.com/hjoshi123/seniorly_interview/utils"
 )
 
 type OrderService interface {
 	CreateOrder(*Order) (*Order, error)
 	TrackOrder(string) (string, error)
 	UpdateOrder(uint, string) (*Order, error)
+	GetOrderByMobileNumber(string) (*Order, *utils.AppError)
 }
 
 type Service struct {
@@ -23,11 +27,23 @@ func NewService(repo OrderRepository) *Service {
 }
 
 func (sv *Service) CreateOrder(order *Order) (*Order, error) {
-	return sv.repository.CreateOrder(order)
+	prevOrder, err := sv.repository.GetOrderByMobileNumber(order.Mobile)
+	if err != nil && err.Type == utils.NotFound {
+		return sv.repository.CreateOrder(order)
+	} else {
+		if prevOrder.Status == "done" {
+			return sv.repository.CreateOrder(order)
+		}
+		return prevOrder, errors.New("user exists with an order in previous")
+	}
 }
 
 func (sv *Service) TrackOrder(mobileNumber string) (string, error) {
 	return sv.repository.TrackOrder(mobileNumber)
+}
+
+func (sv *Service) GetOrderByMobileNumber(mobileNumber string) (*Order, *utils.AppError) {
+	return sv.repository.GetOrderByMobileNumber(mobileNumber)
 }
 
 func (sv *Service) UpdateOrder(id uint, status string) (*Order, error) {

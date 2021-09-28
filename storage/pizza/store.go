@@ -26,7 +26,7 @@ func New(db *gorm.DB) *Store {
 }
 
 func (s *Store) CreateOrder(order *model.Order) (*model.Order, error) {
-	chefs := []string{"Mark", "hemant", "Hello"}
+	chefs := []string{"Mark", "Hemant", "Hello"}
 
 	chefRandom := chefs[rand.Intn(len(chefs))]
 
@@ -78,6 +78,24 @@ func (s *Store) UpdateOrder(id uint, status string) (*model.Order, error) {
 	}
 
 	if err := update.Error; err != nil {
+		errRet := utils.NewAppError(errors.Wrap(err, readError), utils.RepositoryError)
+		return nil, errRet
+	}
+
+	return res, nil
+}
+
+func (s *Store) GetOrderByMobileNumber(mobileNumber string) (*model.Order, *utils.AppError) {
+	res := &model.Order{}
+
+	query := s.db.Where("mobile = ?", mobileNumber).First(res)
+
+	if query.RecordNotFound() {
+		err := utils.NewAppErrorWithType(utils.NotFound)
+		return nil, err
+	}
+
+	if err := query.Error; err != nil {
 		errRet := utils.NewAppError(errors.Wrap(err, readError), utils.RepositoryError)
 		return nil, errRet
 	}
