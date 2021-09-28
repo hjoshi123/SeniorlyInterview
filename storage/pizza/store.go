@@ -43,7 +43,7 @@ func (s *Store) CreateOrder(order *model.Order) (*model.Order, error) {
 func (s *Store) TrackOrder(mobileNumber string) (string, error) {
 	res := &model.Order{}
 
-	query := s.db.Where("mobile = ?", mobileNumber).First(res)
+	query := s.db.Where("mobile = ?", mobileNumber).Last(res)
 
 	if query.RecordNotFound() {
 		err := utils.NewAppErrorWithType(utils.NotFound)

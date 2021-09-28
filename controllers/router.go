@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,14 @@ import (
 	controller "github.com/hjoshi123/seniorly_interview/controllers/pizza"
 	model "github.com/hjoshi123/seniorly_interview/model/pizza"
 )
+
+func LogRequest(c string) gin.HandlerFunc {
+	return func(c1 *gin.Context) {
+		log.Println("Middleware" + c)
+		c1.Next()
+		log.Println("Exit log")
+	}
+}
 
 func NewHTTPHandler(service model.OrderService) http.Handler {
 	router := gin.Default()
@@ -19,6 +28,7 @@ func NewHTTPHandler(service model.OrderService) http.Handler {
 	}
 
 	api := router.Group("/api")
+	api.Use(LogRequest("share"))
 
 	controller.NewRoutesFactory(api)(service)
 

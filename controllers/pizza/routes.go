@@ -46,7 +46,9 @@ func NewRoutesFactory(group *gin.RouterGroup) func(service pizza.OrderService) {
 				return
 			}
 
-			c.JSON(http.StatusOK, status)
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Your order status is " + status,
+			})
 		})
 
 		group.PUT("/update_status", func(c *gin.Context) {
@@ -64,7 +66,10 @@ func NewRoutesFactory(group *gin.RouterGroup) func(service pizza.OrderService) {
 				return
 			}
 
-			c.JSON(http.StatusOK, update)
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Updated successfully",
+				"order": update,
+			})
 		})
 	}
 

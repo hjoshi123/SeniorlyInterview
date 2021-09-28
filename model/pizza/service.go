@@ -53,15 +53,16 @@ func (sv *Service) UpdateOrder(id uint, status string) (*Order, error) {
 	}
 
 	if order.Status == "done" {
-		file, _ := json.MarshalIndent(order, "", " ")
+		file, _ := json.Marshal(order)
 
 		log.Println("Sending notification to user")
 
-		os.Mkdir("test", 0777)
+		os.Mkdir("/tmp/test", 0777)
 
-		fileName := path.Join("test", "file.txt")
+		fileName := path.Join("/tmp/test", "file.json")
 
 		err = ioutil.WriteFile(fileName, file, 0666)
+		log.Printf("Order of user with order id %d is done by chef %s", order.ID, order.Chef)
 		if err != nil {
 			log.Println("Notification error")
 		}

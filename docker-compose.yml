@@ -7,9 +7,9 @@ services:
     networks:
       - default
     environment:
-      - POSTGRES_USER=pgres
-      - POSTGRES_PASSWORD=L0l2345234
-      - POSTGRES_DB=test_db
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     env_file:
       - .env
     ports:
